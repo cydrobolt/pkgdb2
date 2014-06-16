@@ -254,6 +254,9 @@ def log(session, package, topic, message):
                        '%(package_name)s on branch: '
                        '%(package_listing.collection.branchname)s for point'
                        ' of contact: %(package_listing.point_of_contact)s',
+        'package.unretire.request': 'user: %(agent)s requested branch: '
+                                    '%(collection.branchname)s to be '
+                                    'unretired for package %(package.name)s',
         'package.update': 'user: %(agent)s updated package: '
                           '%(package.name)s',
         'package.update.status': 'user: %(agent)s updated package: '
@@ -272,6 +275,9 @@ def log(session, package, topic, message):
                         '%(username)s',
         'package.branch.request': '%(agent)s:%(package.name)s requested new '
                                   'branch %(collection_to.branchname)s',
+        'package.unretire.request': '%(agent)s:%(package.name)s requested '
+                                    'that branch %(collection.branchname)s '
+                                    'be unretired',
         'package.update': '%(agent)s updated package: '
                           '%(package.name)s',
         'package.update.status': '%(agent)s updated package: '
