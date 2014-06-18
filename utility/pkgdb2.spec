@@ -3,7 +3,7 @@
 
 Name:           pkgdb2
 Version:        1.11.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        The Fedora package database
 
 License:        GPLv2+
@@ -32,11 +32,11 @@ BuildRequires:  python-blinker
 
 # EPEL6
 %if ( 0%{?rhel} && 0%{?rhel} == 6 )
-BuildRequires:  python-sqlalchemy0.7
-Requires:  python-sqlalchemy0.7
+BuildRequires:  python-sqlalchemy0.8
+Requires:  python-sqlalchemy0.8
 %else
-BuildRequires:  python-sqlalchemy > 0.5
-Requires:  python-sqlalchemy > 0.5
+BuildRequires:  python-sqlalchemy > 0.8
+Requires:  python-sqlalchemy > 0.8
 %endif
 
 Requires:  python-alembic
@@ -93,6 +93,10 @@ install -m 644 utility/pkgdb2_branch.py $RPM_BUILD_ROOT/%{_datadir}/pkgdb2/pkgdb
 cp -r alembic $RPM_BUILD_ROOT/%{_datadir}/pkgdb2/
 install -m 644 utility/alembic.ini $RPM_BUILD_ROOT/%{_sysconfdir}/pkgdb2/alembic.ini
 
+## Running the tests would require having flask >= 0.10 which is not present in
+## epel6
+#%check
+#./runtests.sh
 
 %files
 %doc README.rst COPYING doc/
@@ -106,6 +110,10 @@ install -m 644 utility/alembic.ini $RPM_BUILD_ROOT/%{_sysconfdir}/pkgdb2/alembic
 
 
 %changelog
+* Wed Jun 18 2014 Pierre-Yves Chibon <pingou@pingoured.fr> - 1.11.1-2
+- Test running the unit-tests at build time but doesn't work with EPEL6
+- Bump requirement to python-sqlalchemy 0.8+
+
 * Tue Jun 10 2014  Pierre-Yves Chibon <pingou@pingoured.fr> - 1.11.1-1
 - Update to 1.11.1
 - Fix the search to search all packages by default, including orphaned onces
