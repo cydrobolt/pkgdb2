@@ -8,15 +8,15 @@
 
 {% set options = True %}
 {%block options %}
-<form action="{{ url_for('.%s' % origin, motif=motif) }}" method="get">
-    Restrict to branch: <input type="text" name="branches"/> <br />
-    Restrict to status:
-    <select name="status">
-      <option value="" {% if not status %} selected {% endif %}>All</option>
-      <option value="Approved" {% if status == 'Approved' %} selected {% endif %}>Approved</option>
-      <option value="Orphaned" {% if status == 'Orphaned' %} selected {% endif %}>Orphaned</option>
-      <option value="Retired" {% if status == 'Retired' %} selected {% endif %}>Retired</option>
-    </select> <br />
+<form action="{{ url_for('.%s' % origin) }}" method="get">
+    Restrict to branch: <input type="text" name="branches" /> <br />
+    {% if origin == 'list_packages' %}
+    Restrict to status: <input type="text" name="status" value="Approved" /> <br />
+    {% elif origin == 'list_orphaned' %}
+    Restrict to status: <input type="text" name="status" value="Orphaned" /> <br />
+    {% elif origin == 'list_retired' %}
+    Restrict to status: <input type="text" name="status" value="Retired" /> <br />
+    {% endif %}
     Restrict to owner: <input type="text" name="owner" /> <br />
     <input type="submit" class="submit positive button" value="filter">
 </form>
@@ -52,9 +52,8 @@ or <a href="{{ url_for('.list_orphaned') }}">orphaned</a> packages</p>
 <table>
     <tr>
         <td>
-        {% if page > 1%}
-            <a href="{{ url_for('.%s' % origin, motif=motif, page=page-1,
-                branches=branches, status=status, owner=owner) }}">
+        {% if page > 1 %}
+            <a href="{{ url_for('.%s' % origin, motif=motif) }}?page={{page - 1}}">
                 &lt; Previous
             </a>
         {% else %}
@@ -64,8 +63,7 @@ or <a href="{{ url_for('.list_orphaned') }}">orphaned</a> packages</p>
         <td>{{ page }} / {{ total_page }}</td>
         <td>
             {% if page < total_page %}
-            <a href="{{ url_for('.%s' % origin, motif=motif, page=page+1,
-                branches=branches, status=status, owner=owner) }}">
+            <a href="{{ url_for('.%s' % origin, motif=motif) }}?page={{page + 1}}">
                 Next &gt;
             </a>
             {% else %}
@@ -77,25 +75,30 @@ or <a href="{{ url_for('.list_orphaned') }}">orphaned</a> packages</p>
 {% endif %}
 
 <ul>
-{% for pkg in packages %}
-    <li>
-    <a href="{{url_for('.package_info', package=pkg.name)}}">
-            {{ pkg.name }}</a>
-    -- {{ pkg.summary }}
-    (
-    {% for listing in pkg.listings | sort(attribute="collection.branchname", reverse=True)
-        %} {% if listing.collection.status != 'EOL' %}
-        {% if origin == 'list_packages' and listing.status == 'Approved' %}
-            {{ listing.collection.branchname }}
-        {% elif origin == 'list_retired' and listing.status == 'Retired' %}
-            {{ listing.collection.branchname }}
-        {% elif origin == 'list_orphaned' and listing.status == 'Orphaned' %}
-            {{ listing.collection.branchname }}
-        {% endif %}
-    {% endif %}{% endfor %}
-    )
+{% if total_page >= page and page > 0 %}
+    {% for pkg in packages %}
+        <li>
+        <a href="{{url_for('.package_info', package=pkg.name)}}">
+                {{ pkg.name }}</a>
+        -- {{ pkg.summary }}
+        (
+        {% for listing in pkg.listings %} {% if listing.collection.status != 'EOL' %}
+            {% if origin == 'list_packages' and listing.status == 'Approved' %}
+                {{ listing.collection.branchname }}
+            {% elif origin == 'list_retired' and listing.status == 'Retired' %}
+                {{ listing.collection.branchname }}
+            {% elif origin == 'list_orphaned' and listing.status == 'Orphaned' %}
+                {{ listing.collection.branchname }}
+            {% endif %}
+        {% endif %}{% endfor %}
+        )
+        </li>
+    {% endfor %}
+{% else %}
+    <li>Sorry, but the page you are requesting is unavailable. <br />
+    <a href="{{ url_for('.list_packagers', motif=motif) }}">Back to the beginning of the list</a>
     </li>
-{% endfor %}
+{% endif %}
 </ul>
 
 {% endblock %}
