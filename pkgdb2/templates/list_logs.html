@@ -30,7 +30,7 @@
 This page should refresh automatically every 5 seconds
 {% endif %}
 
-{% if total_page and total_page > 1 %}
+{% if total_page and total_page > 1 and total_page >= page %}
 <table>
     <tr>
         <td>
@@ -75,7 +75,10 @@ This page should refresh automatically every 5 seconds
     {% endfor %}
     </table>
 {% else %}
-    Sorry, but the page you are requesting is unavailable. <br /><a href="{{ url_for('.list_logs', motif=motif) }}">Back to the beginning of the list</a>
+    <p>
+        Sorry, but the page you are requesting is unavailable. <br />
+        <a href="{{ url_for('.list_logs', motif=motif) }}">Back to the beginning of the list</a>
+    </p>
 {% endif %}
 
 
